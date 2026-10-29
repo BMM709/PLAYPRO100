@@ -18,6 +18,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* ปิดแถบสีฟ้าเวลาคลิกหรือกดบนมือถือ */
         }
         body {
             background-color: var(--bg-color);
@@ -267,8 +268,8 @@
             
             <div class="script-card">
                 <div>
-                    <strong>การอยู่รอดของพเนจร</strong>
-                    <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">สคริปต์ช่วยเล่นแมพอยู่รอดของพเนจร อัปเดตใหม่ล่าสุด</p>
+                    <strong>การอยู่รอดของการพเนจร</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">สคริปต์ช่วยเล่นแมพการอยู่รอดของการพเนจร อัปเดตใหม่ล่าสุด</p>
                 </div>
                 <button class="btn" onclick="switchPage('scripts')">รับสคริป</button>
             </div>
@@ -295,7 +296,7 @@
             <p>แมพที่มีทั้งหมด:</p>
             <div class="script-card">
                 <div>
-                    <strong>1. แมพการอยู่รอดของพเนจร</strong>
+                    <strong>1. แมพการอยู่รอดของการพเนจร</strong>
                 </div>
                 <button class="btn" onclick="openScriptModal()">ดูเลย</button>
             </div>
@@ -304,7 +305,7 @@
         <!-- คีย์ -->
         <div id="page-keys" class="page">
             <h1>ระบบคีย์</h1>
-            <p><strong>แมพ:</strong> อยู่รอดของพเนจร</p>
+            <p><strong>แมพ:</strong> การอยู่รอดของการพเนจร</p>
             <p><strong>สถานะ:</strong> ใช้งานได้</p>
             <p><strong>ระบบคีย์:</strong> ไม่มีคีย์</p>
             <p><strong>ความเสี่ยง:</strong> 10%</p>
@@ -313,11 +314,10 @@
         <!-- การอัพเดทเว็บไซต์ -->
         <div id="page-updates" class="page">
             <h1>การอัพเดทเว็บไซต์</h1>
-            <p><strong>เวอร์ชันล่าสุด:</strong> v1.0.0</p>
-            <p>• เพิ่มเมนูการอัพเดทเว็บไซต์</p>
-            <p>• ขยายเนื้อหาและคำอธิบายในหน้าหลักให้ละเอียดยิ่งขึ้น</p>
-            <p>• ระบบบันทึกหน้าปัจจุบันผ่าน URL Hash อัตโนมัติเมื่อคัดลอกลิงก์</p>
-            <p>• ปรับปุ่มหน้าหลักให้พาไปแท็บสคริปต์ทันที</p>
+            <p><strong>เวอร์ชันล่าสุด:</strong> v1.1.2</p>
+            <p>• เอาแถบสีฟ้าเวลากล่าวคลิก/ทัชบนมือถือออกเรียบร้อยแล้ว</p>
+            <p>• เปลี่ยนชื่อสคริปต์เป็น "การอยู่รอดของการพเนจร" อย่างเป็นทางการ</p>
+            <p>• ระบบบันทึกสถานะหน้าต่างและลิงก์ทำงานปกติ</p>
         </div>
     </div>
 
@@ -328,7 +328,7 @@
             <span style="font-weight: bold;">รายละเอียดสคริปต์</span>
             <span></span>
         </div>
-        <h2>การอยู่รอดของพเนจร</h2>
+        <h2>การอยู่รอดของการพเนจร</h2>
         <div class="code-box" id="scriptCode">loadstring(game:HttpGet("https://raw.githubusercontent.com/BMM709/PROBABLYPLOM1/refs/heads/main/ABOPLIYPRI100.ua"))()</div>
         <button class="btn" onclick="copyScript()" style="width: 100%; text-align: center;">รับสคริป</button>
     </div>
@@ -343,23 +343,29 @@
             overlay.classList.toggle('active');
         }
 
-        function switchPage(pageId) {
+        function switchPage(pageId, updateHash = true) {
             const pages = document.querySelectorAll('.page');
             pages.forEach(p => p.classList.remove('active'));
             
             const targetPage = document.getElementById('page-' + pageId);
             if (targetPage) {
                 targetPage.classList.add('active');
-                window.location.hash = pageId;
+                if (updateHash) {
+                    window.location.hash = pageId;
+                }
             }
         }
 
-        function openScriptModal() {
+        function openScriptModal(updateHash = true) {
             document.getElementById('scriptModal').classList.add('active');
+            if (updateHash) {
+                window.location.hash = 'script-detail';
+            }
         }
 
         function closeScriptModal() {
             document.getElementById('scriptModal').classList.remove('active');
+            switchPage('scripts', true);
         }
 
         function copyScript() {
@@ -373,25 +379,25 @@
             });
         }
 
-        // Handle initial load based on hash
-        window.addEventListener('DOMContentLoaded', () => {
+        function handleHash() {
             const hash = window.location.hash.replace('#', '');
-            if (hash && document.getElementById('page-' + hash)) {
-                switchPage(hash);
+            if (hash === 'script-detail') {
+                switchPage('scripts', false);
+                openScriptModal(false);
+            } else if (hash && document.getElementById('page-' + hash)) {
+                document.getElementById('scriptModal').classList.remove('active');
+                switchPage(hash, false);
             } else {
-                switchPage('home');
+                document.getElementById('scriptModal').classList.remove('active');
+                switchPage('home', false);
             }
-        });
+        }
 
-        // Handle back/forward browser buttons
-        window.addEventListener('hashchange', () => {
-            const hash = window.location.hash.replace('#', '');
-            if (hash && document.getElementById('page-' + hash)) {
-                const pages = document.querySelectorAll('.page');
-                pages.forEach(p => p.classList.remove('active'));
-                document.getElementById('page-' + hash).classList.add('active');
-            }
-        });
+        // Handle initial load based on hash
+        window.addEventListener('DOMContentLoaded', handleHash);
+
+        // Handle back/forward/hash change
+        window.addEventListener('hashchange', handleHash);
     </script>
 </body>
 </html>
