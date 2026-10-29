@@ -3,424 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>playpro_100 - Hub สคริปต์</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Prompt', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Google Fonts: Prompt -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Distributing scripts 🥷</title>
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
         body {
-            font-family: 'Prompt', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        /* Sidebar / Drawer */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.active {
+            right: 0;
+        }
+        .sidebar-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+            flex-grow: 1;
+        }
+        .sidebar-menu li a {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background-color: #f1f2f6;
+            color: var(--accent-color);
+        }
+        .sidebar-footer {
+            padding: 15px 20px;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 999;
+        }
+        .overlay.active {
+            display: block;
+        }
+        /* Main Content */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .page {
+            display: none;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .page.active {
+            display: block;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        /* Script List Item */
+        .script-card {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        /* Full screen modal for script */
+        .script-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .script-modal.active {
+            display: flex;
+        }
+        .script-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        .code-box {
+            background-color: #f1f2f6;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 3000;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+<body>
 
-    <!-- Top Navigation Bar -->
-    <header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Brand & Hamburger Button -->
-            <div class="flex items-center space-x-3">
-                <button onclick="toggleMobileMenu()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300 md:hidden transition-colors" aria-label="เมนู">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-                <div class="flex items-center space-x-2">
-                    <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                        P
-                    </div>
-                    <h1 class="text-xl font-bold tracking-tight text-slate-900">
-                        playpro_100
-                    </h1>
-                </div>
-            </div>
-
-            <!-- Desktop Navigation Menu -->
-            <nav class="hidden md:flex items-center space-x-1">
-                <button onclick="switchSection('home')" id="desktop-nav-home" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors active-nav bg-slate-100 text-slate-900">
-                    หน้าหลัก
-                </button>
-                <button onclick="switchSection('info')" id="desktop-nav-info" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                    ข้อมูล
-                </button>
-                <button onclick="switchSection('scripts')" id="desktop-nav-scripts" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                    สคริป
-                </button>
-                <button onclick="switchSection('keys')" id="desktop-nav-keys" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                    คีย์
-                </button>
-            </nav>
-
-            <!-- Status Indicator -->
-            <div class="hidden sm:flex items-center space-x-2 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-xs font-medium">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>สถานะระบบ: ปกติ</span>
-            </div>
-        </div>
+    <header>
+        <div class="logo">Distributing scripts 🥷</div>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
     </header>
 
-    <!-- Mobile Drawer Menu (Sidebar) -->
-    <div id="mobile-menu-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden transition-opacity opacity-0 md:hidden"></div>
-    <div id="mobile-menu" class="fixed top-0 left-0 bottom-0 w-72 bg-white shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold">P</div>
-                <span class="font-bold text-slate-900">playpro_100</span>
-            </div>
-            <button onclick="toggleMobileMenu()" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>เมนู</h3>
+            <button class="close-btn" onclick="toggleMenu()">×</button>
         </div>
-        <nav class="p-4 space-y-1 flex-1">
-            <button onclick="switchSection('home'); toggleMobileMenu();" id="mobile-nav-home" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                <i class="fa-solid fa-house w-5 text-slate-500"></i>
-                <span>หน้าหลัก</span>
-            </button>
-            <button onclick="switchSection('info'); toggleMobileMenu();" id="mobile-nav-info" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                <i class="fa-solid fa-circle-info w-5 text-slate-500"></i>
-                <span>ข้อมูล</span>
-            </button>
-            <button onclick="switchSection('scripts'); toggleMobileMenu();" id="mobile-nav-scripts" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                <i class="fa-solid fa-code w-5 text-slate-500"></i>
-                <span>สคริป</span>
-            </button>
-            <button onclick="switchSection('keys'); toggleMobileMenu();" id="mobile-nav-keys" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                <i class="fa-solid fa-key w-5 text-slate-500"></i>
-                <span>คีย์</span>
-            </button>
-        </nav>
-        <div class="p-4 border-t border-slate-100 text-xs text-slate-400 text-center">
-            &copy; 2026 playpro_100 Hub
+        <ul class="sidebar-menu">
+            <li><a href="#home" onclick="switchPage('home'); toggleMenu();">หน้าหลัก</a></li>
+            <li><a href="#info" onclick="switchPage('info'); toggleMenu();">ข้อมูล</a></li>
+            <li><a href="#scripts" onclick="switchPage('scripts'); toggleMenu();">สคริป</a></li>
+            <li><a href="#keys" onclick="switchPage('keys'); toggleMenu();">คีย์</a></li>
+            <li><a href="#updates" onclick="switchPage('updates'); toggleMenu();">การอัพเดทเว็บไซต์</a></li>
+        </ul>
+        <div class="sidebar-footer">ผู้สร้าง: playpro100</div>
+    </div>
+
+    <div class="container">
+        <!-- หน้าหลัก -->
+        <div id="page-home" class="page">
+            <h1>หน้าหลัก</h1>
+            <p>ยินดีต้อนรับสู่ <strong>Distributing scripts 🥷</strong> เว็บไซต์ศูนย์รวมและแจกจ่ายสคริปต์สำหรับเกม Roblox ที่ผ่านการคัดสรรมาเป็นอย่างดี ออกแบบมาเพื่อให้ผู้เล่นทุกคนสามารถเข้าถึงสคริปต์ที่มีคุณภาพ ใช้งานง่าย และมีความปลอดภัยสูง พัฒนาและดูแลระบบโดย <strong>playpro100</strong></p>
+            <p>ภายในเว็บไซต์แห่งนี้ เรามุ่งเน้นการรวบรวมสคริปต์เด็ดๆ และอัปเดตใหม่อย่างสม่ำเสมอ เพื่อให้ผู้ใช้งานได้รับประสบการณ์การเล่นเกมที่สนุกสนาน สะดวกสบาย และเต็มไปด้วยฟีเจอร์ช่วยเล่นที่ยอดเยี่ยม ไม่ว่าจะเป็นระบบอำนวยความสะดวก หรือตัวช่วยภายในเกมต่างๆ ที่คุณชื่นชอบ</p>
+            <p>ท่านสามารถตรวจสอบรายการสคริปต์ทั้งหมดได้ที่แท็บเมนูด้านข้างหรือเลือกกดรับสคริปต์ตัวแนะนำด้านล่างนี้ได้ทันที เราขอแนะนำให้ทุกท่านศึกษาข้อมูลและเงื่อนไขความปลอดภัยก่อนการใช้งานทุกครั้ง เพื่อป้องกันปัญหาที่อาจเกิดขึ้นกับบัญชีเกมของท่าน</p>
+            
+            <div class="script-card">
+                <div>
+                    <strong>การอยู่รอดของพเนจร</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">สคริปต์ช่วยเล่นแมพอยู่รอดของพเนจร อัปเดตใหม่ล่าสุด</p>
+                </div>
+                <button class="btn" onclick="switchPage('scripts')">รับสคริป</button>
+            </div>
+        </div>
+
+        <!-- ข้อมูล -->
+        <div id="page-info" class="page">
+            <h1>ข้อมูล</h1>
+            <p>1. เว็บไซต์นี้สร้างขึ้นเพื่อแจกจ่ายสคริปต์สำหรับเกม Roblox เท่านั้น</p>
+            <p>2. สคริปต์ทุกตัวได้รับการตรวจสอบเบื้องต้นแล้วว่าสามารถใช้งานได้จริง</p>
+            <p>3. ควรใช้งานด้วยความระมัดระวังเพื่อป้องกันการแบนจากระบบเกม</p>
+            <p>4. อัปเดตสคริปต์ใหม่ๆ อย่างต่อเนื่องทุกสัปดาห์</p>
+            <p>5. หากพบปัญหาในการใช้งานสามารถแจ้งได้ผ่านช่องทางคอมมิวนิตี้</p>
+            <p>6. ห้ามนำสคริปต์ไปใช้ในทางที่ผิดหรือแสวงหาผลกำไรในเชิงพาณิชย์</p>
+            <p>7. ทีมงานไม่รับผิดชอบต่อความเสียหายใดๆ ที่เกิดขึ้นกับบัญชีผู้ใช้</p>
+            <p>8. โปรดศึกษาคู่มือการใช้งานก่อนรันสคริปต์ทุกครั้ง</p>
+            <p>9. รองรับ executors หลากหลายค่ายทั้งบนมือถือและคอมพิวเตอร์</p>
+            <p>10. ขอขอบคุณผู้ใช้งานทุกท่านที่ให้การสนับสนุนเว็บไซต์ของเราเสมอมา</p>
+        </div>
+
+        <!-- สคริป -->
+        <div id="page-scripts" class="page">
+            <h1>สคริปต์ทั้งหมด</h1>
+            <p>แมพที่มีทั้งหมด:</p>
+            <div class="script-card">
+                <div>
+                    <strong>1. แมพการอยู่รอดของพเนจร</strong>
+                </div>
+                <button class="btn" onclick="openScriptModal()">ดูเลย</button>
+            </div>
+        </div>
+
+        <!-- คีย์ -->
+        <div id="page-keys" class="page">
+            <h1>ระบบคีย์</h1>
+            <p><strong>แมพ:</strong> อยู่รอดของพเนจร</p>
+            <p><strong>สถานะ:</strong> ใช้งานได้</p>
+            <p><strong>ระบบคีย์:</strong> ไม่มีคีย์</p>
+            <p><strong>ความเสี่ยง:</strong> 10%</p>
+        </div>
+
+        <!-- การอัพเดทเว็บไซต์ -->
+        <div id="page-updates" class="page">
+            <h1>การอัพเดทเว็บไซต์</h1>
+            <p><strong>เวอร์ชันล่าสุด:</strong> v1.0.0</p>
+            <p>• เพิ่มเมนูการอัพเดทเว็บไซต์</p>
+            <p>• ขยายเนื้อหาและคำอธิบายในหน้าหลักให้ละเอียดยิ่งขึ้น</p>
+            <p>• ระบบบันทึกหน้าปัจจุบันผ่าน URL Hash อัตโนมัติเมื่อคัดลอกลิงก์</p>
+            <p>• ปรับปุ่มหน้าหลักให้พาไปแท็บสคริปต์ทันที</p>
         </div>
     </div>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        <!-- SECTION 1: หน้าหลัก (Home) -->
-        <section id="section-home" class="space-y-6">
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-xs space-y-6">
-                <div class="space-y-2">
-                    <span class="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-medium">
-                        &lt;-- หน้าหลัก
-                    </span>
-                    <h2 class="text-2xl sm:text-4xl font-bold text-slate-900">
-                        ยินดีต้อนรับสู่ <span class="text-indigo-600">playpro_100</span>
-                    </h2>
-                    <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl">
-                        ศูนย์รวมสคริปต์เกม Roblox คุณภาพสูง สะอาด ปลอดภัย ใช้งานง่าย และอัปเดตสม่ำเสมอโดยทีมงานมืออาชีพ สามารถเลือกดูสคริปต์หรือคัดลอกโค้ดไปรันได้ทันทีโดยไม่มีขั้นตอนยุ่งยาก
-                    </p>
-                </div>
-
-                <div class="pt-2">
-                    <button onclick="switchSection('scripts')" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl shadow-sm transition-all flex items-center space-x-2">
-                        <span>ไปที่หน้าสคริปต์</span>
-                        <i class="fa-solid fa-arrow-right text-sm"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Featured Script Card -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
-                    <i class="fa-solid fa-star text-amber-500"></i>
-                    <span>สคริปต์แนะนำ</span>
-                </h3>
-
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="space-y-1">
-                        <span class="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 rounded text-xs font-semibold">แนะนำ</span>
-                        <h4 class="text-xl font-bold text-slate-900 mt-1">สคริป การอยู่รอดของพเนจร</h4>
-                        <p class="text-slate-600 text-sm max-w-xl">
-                            ระบบช่วยเล่นเกมแนวเอาตัวรอด ฟาร์มไว ป้องกันอันตราย และอำนวยความสะดวกครบถ้วน ทำงานเสถียร ไม่หลุด
-                        </p>
-                    </div>
-                    <button onclick="switchSection('scripts')" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2 shrink-0">
-                        <i class="fa-solid fa-download"></i>
-                        <span>รับสคริป</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 2: ข้อมูล (Info) -->
-        <section id="section-info" class="space-y-6 hidden">
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-xs space-y-6">
-                <div class="space-y-2">
-                    <span class="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-medium">
-                        &lt;-- ข้อมูล
-                    </span>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">
-                        รายละเอียดและคู่มือการใช้งานระบบ playpro_100
-                    </h2>
-                </div>
-
-                <!-- Comprehensive Description (20-30 lines) -->
-                <div class="text-slate-700 space-y-3 text-sm sm:text-base leading-relaxed border-t border-slate-100 pt-6">
-                    <p>1. ยินดีต้อนรับสมาชิกทุกท่านเข้าสู่แพลตฟอร์มฮับสคริปต์ playpro_100 ศูนย์กลางสคริปต์คุณภาพสูงที่มีการตรวจสอบโค้ดอย่างละเอียดก่อนเผยแพร่</p>
-                    <p>2. เว็บไซต์นี้ถูกออกแบบมาในสไตล์ที่เรียบง่าย สะอาดตา และใช้งานง่ายบนทุกอุปกรณ์ ไม่ว่าจะเป็นคอมพิวเตอร์หรือโทรศัพท์มือถือ</p>
-                    <p>3. สคริปต์ทุกชุดผ่านการทดสอบบนแพลตฟอร์มเกมที่รองรับ เพื่อให้แน่ใจว่าผู้เล่นจะได้รับประสบการณ์ที่ยอดเยี่ยม ไร้ปัญหาอาการกระตุก</p>
-                    <p>4. สำหรับเกม "การอยู่รอดของพเนจร" ทีมงานได้พัฒนาฟังก์ชันพิเศษที่ช่วยอำนวยความสะดวกในการเก็บทรัพยากรและการหลบหนีภัยอันตราย</p>
-                    <p>5. ทางเราให้ความสำคัญกับความเป็นส่วนตัวและความปลอดภัยของผู้ใช้งาน โค้ดทั้งหมดจะถูกดึงผ่านลิงก์ตรงที่ปลอดภัยและปราศจากมัลแวร์</p>
-                    <p>6. ระบบป้องกันการตรวจจับ (Anti-Ban): แม้การใช้สคริปต์จะมีความเสี่ยงเสมอ แต่สคริปต์ของเรามีระบบ Bypass เบื้องต้นเพื่อลดโอกาสถูกแบน</p>
-                    <p>7. การอัปเดตแพตช์: เมื่อตัวเกมหลักมีการอัปเดต ทีมงานจะทำการปรับปรุงโค้ดและเผยแพร่เวอร์ชันใหม่ทันทีภายใน 24 ชั่วโมง</p>
-                    <p>8. วิธีการใช้งานเบื้องต้น: ผู้ใช้งานสามารถคัดลอกคำสั่ง loadstring จากหน้าสคริปต์ นำไปวางใน Executor ที่ใช้งาน แล้วกดรันได้ทันที</p>
-                    <p>9. ข้อกำหนดการใช้งาน: ห้ามนำสคริปต์จาก playpro_100 ไปจำหน่ายต่อหรือแอบอ้างว่าเป็นผลงานของตนเอง อนุญาตให้ใช้ส่วนบุคคลเท่านั้น</p>
-                    <p>10. ระบบคีย์ (Key System): สำหรับสคริปต์บางตัวอาจมีระบบคีย์หรือเปิดให้ใช้งานฟรีโดยไม่มีคีย์ ซึ่งในส่วนของแมพพเนจรนี้ไม่มีการติดคีย์</p>
-                    <p>11. โฮสติ้งและลิงก์ดิบ (Raw GitHub) ของเรามีความเสถียรสูง รองรับการเรียกใช้งานพร้อมกันจำนวนมากโดยไม่มีอาการลิงก์ตาย</p>
-                    <p>12. การพัฒนาอย่างต่อเนื่อง: ทีมงานมุ่งมั่นพัฒนาฟีเจอร์ใหม่ๆ เพิ่มเติมในอนาคต เช่น ระบบค้นหาสคริปต์อัจฉริยะและการแจ้งเตือนอัปเดต</p>
-                    <p>13. ขอขอบพระคุณผู้ใช้งานทุกท่านที่ให้การสนับสนุน playpro_100 ด้วยดีเสมอมา เราสัญญาว่าจะรักษามาตรฐานคุณภาพให้ดียิ่งขึ้นไป</p>
-                    <p>14. สคริปต์รองรับ Executor ทั้งบนมือถือ (Delta, Codex, Arceus X) และบนคอมพิวเตอร์ (Synapse Z, Electron ฯลฯ)</p>
-                    <p>15. การรันโค้ดควรตรวจสอบว่าเกมเปิดอยู่และเชื่อมต่ออินเทอร์เน็ตเสถียร เพื่อป้องกันข้อผิดพลาดในการโหลดไลบรารีสคริปต์</p>
-                    <p>16. หากพบปัญหาหน้าจอค้าง ให้ทำการรีสตาร์ทเกมและเคลียร์แคชของ Executor ก่อนลองใหม่อีกครั้งในภายหลัง</p>
-                    <p>17. ทีมงานไม่มีส่วนรับผิดชอบต่อความเสียหายที่เกิดจากการใช้งานผิดวิธี หรือการถูกแบนบัญชีโดยผู้พัฒนาเกมอย่างเป็นทางการ</p>
-                    <p>18. ทุกข้อกำหนดและเงื่อนไขอาจมีการเปลี่ยนแปลงตามความเหมาะสม โดยจะประกาศให้ทราบผ่านหน้าฮับสคริปต์แห่งนี้</p>
-                    <p>19. ระบบออกแบบมาให้โหลดไว น้ำหนักเบา ไม่กินทรัพยากรเครื่องของผู้ใช้งานขณะเปิดใช้งานเว็บเบราว์เซอร์</p>
-                    <p class="font-semibold text-indigo-600 pt-2 border-t border-slate-100">
-                        สถานะระบบปัจจุบัน: ออนไลน์และพร้อมให้บริการตลอด 24 ชั่วโมง (Version 1.0.0 Stable)
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 3: สคริป (Scripts) -->
-        <section id="section-scripts" class="space-y-6 hidden">
-            <div class="space-y-2">
-                <span class="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-medium">
-                    &lt;-- สคริป
-                </span>
-                <h2 class="text-2xl font-bold text-slate-900">แมพที่มี 1</h2>
-            </div>
-
-            <!-- Script Item Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <h3 class="text-xl font-bold text-slate-900">
-                        1. แมพการอยู่รอดของพเนจร
-                    </h3>
-                    <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-medium w-fit">
-                        พร้อมใช้งาน
-                    </span>
-                </div>
-
-                <p class="text-slate-600 text-sm">
-                    คัดลอกโค้ด Loadstring ด้านล่างนี้ไปวางใน Executor ของคุณเพื่อใช้งานสคริปต์
-                </p>
-
-                <!-- Code Box -->
-                <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs sm:text-sm overflow-x-auto border border-slate-800 shadow-inner">
-                    <code id="script-code">loadstring(game:HttpGet("https://raw.githubusercontent.com/BMM709/PROBABLYPLOM1/refs/heads/main/ABOPLIYPRI100.ua"))()</code>
-                </div>
-
-                <!-- Copy Button -->
-                <div class="flex justify-end pt-2">
-                    <button onclick="copyScript()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-sm transition-all flex items-center space-x-2">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>คัดลอกสคริปต์</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 4: คีย์ (Keys) -->
-        <section id="section-keys" class="space-y-6 hidden">
-            <div class="space-y-2">
-                <span class="inline-block px-3 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-medium">
-                    &lt;-- คีย์
-                </span>
-                <h2 class="text-2xl font-bold text-slate-900">สถานะคีย์และความปลอดภัย</h2>
-            </div>
-
-            <!-- Key Status Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div>
-                        <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Map Name</span>
-                        <h3 class="text-xl font-bold text-slate-900 mt-0.5">แมพการอยู่รอดของพเนจร</h3>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
-                        <i class="fa-solid fa-key"></i>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <!-- Status -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                        <span class="text-xs text-slate-500 font-medium">สถานะสคริปต์</span>
-                        <div class="text-base font-bold text-emerald-600 flex items-center space-x-2">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <span>ใช้งานได้</span>
-                        </div>
-                    </div>
-
-                    <!-- Key Status -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                        <span class="text-xs text-slate-500 font-medium">ระบบคีย์</span>
-                        <div class="text-base font-bold text-indigo-600 flex items-center space-x-2">
-                            <i class="fa-solid fa-unlock"></i>
-                            <span>ไม่มีคีย์</span>
-                        </div>
-                    </div>
-
-                    <!-- Risk Level -->
-                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                        <span class="text-xs text-slate-500 font-medium">ความเสี่ยงในการโดนแบน</span>
-                        <div class="text-base font-bold text-amber-600 flex items-center space-x-2">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            <span>ความเสี่ยง 10%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-900 text-xs sm:text-sm flex items-start space-x-3">
-                    <i class="fa-solid fa-circle-info text-indigo-600 mt-0.5"></i>
-                    <p>สคริปต์ชุดนี้เปิดให้ใช้งานฟรีโดยไม่ต้องผ่านระบบรับคีย์ใดๆ ท่านสามารถคัดลอกโค้ดจากหน้าสคริปต์ไปใช้งานในเกมได้ทันที</p>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
-        <div class="max-w-6xl mx-auto px-4 text-center text-sm text-slate-500">
-            &copy; 2026 playpro_100. All rights reserved. Clean & Classic Edition.
+    <!-- Fullscreen Script Modal -->
+    <div class="script-modal" id="scriptModal">
+        <div class="script-modal-header">
+            <button class="back-btn" onclick="closeScriptModal()">← ย้อนกลับ</button>
+            <span style="font-weight: bold;">รายละเอียดสคริปต์</span>
+            <span></span>
         </div>
-    </footer>
-
-    <!-- Custom Toast Notification (Instead of alert()) -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 ease-in-out pointer-events-none">
-        <div class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl flex items-center space-x-3 border border-slate-800">
-            <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <div>
-                <p id="toast-msg" class="text-sm font-medium">คัดลอกสำเร็จแล้ว</p>
-            </div>
-        </div>
+        <h2>การอยู่รอดของพเนจร</h2>
+        <div class="code-box" id="scriptCode">loadstring(game:HttpGet("https://raw.githubusercontent.com/BMM709/PROBABLYPLOM1/refs/heads/main/ABOPLIYPRI100.ua"))()</div>
+        <button class="btn" onclick="copyScript()" style="width: 100%; text-align: center;">รับสคริป</button>
     </div>
 
-    <!-- Application JavaScript Logic -->
+    <div class="toast" id="toast">คัดลอกสคริปต์สำเร็จ!</div>
+
     <script>
-        // Toggle Mobile Menu Sidebar
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            const isOpen = !menu.classList.contains('-translate-x-full');
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
 
-            if (isOpen) {
-                menu.classList.add('-translate-x-full');
-                overlay.classList.add('opacity-0');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
-            } else {
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-                menu.classList.remove('-translate-x-full');
+        function switchPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.classList.remove('active'));
+            
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.location.hash = pageId;
             }
         }
 
-        // Switch Sections smoothly
-        function switchSection(sectionId) {
-            // Hide all sections
-            const sections = ['home', 'info', 'scripts', 'keys'];
-            sections.forEach(s => {
-                const el = document.getElementById(`section-${s}`);
-                if (el) el.classList.add('hidden');
-            });
-
-            // Show target section
-            const target = document.getElementById(`section-${sectionId}`);
-            if (target) {
-                target.classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            // Update desktop navigation active styles
-            sections.forEach(s => {
-                const btn = document.getElementById(`desktop-nav-${s}`);
-                if (btn) {
-                    if (s === sectionId) {
-                        btn.className = "px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-900 transition-colors";
-                    } else {
-                        btn.className = "px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors";
-                    }
-                }
-            });
+        function openScriptModal() {
+            document.getElementById('scriptModal').classList.add('active');
         }
 
-        // Copy Script function with clipboard fallback and custom toast
+        function closeScriptModal() {
+            document.getElementById('scriptModal').classList.remove('active');
+        }
+
         function copyScript() {
-            const codeText = document.getElementById('script-code').innerText;
+            const codeText = document.getElementById('scriptCode').innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 2000);
+            });
+        }
 
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(codeText).then(() => {
-                    showToast('คัดลอก loadstring สำเร็จเรียบร้อย!');
-                }).catch(() => {
-                    fallbackCopy(codeText);
-                });
+        // Handle initial load based on hash
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && document.getElementById('page-' + hash)) {
+                switchPage(hash);
             } else {
-                fallbackCopy(codeText);
+                switchPage('home');
             }
-        }
+        });
 
-        function fallbackCopy(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showToast('คัดลอก loadstring สำเร็จเรียบร้อย!');
-                } else {
-                    showToast('ไม่สามารถคัดลอกได้ กรุณาคัดลอกด้วยตนเอง');
-                }
-            } catch (err) {
-                showToast('เกิดข้อผิดพลาดในการคัดลอก');
+        // Handle back/forward browser buttons
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && document.getElementById('page-' + hash)) {
+                const pages = document.querySelectorAll('.page');
+                pages.forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + hash).classList.add('active');
             }
-            document.body.removeChild(textarea);
-        }
-
-        // Show Custom Toast Notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toast-msg');
-            msgEl.innerText = message;
-
-            toast.classList.remove('pointer-events-none', 'translate-y-24', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-24', 'opacity-0');
-                setTimeout(() => toast.classList.add('pointer-events-none'), 300);
-            }, 3000);
-        }
+        });
     </script>
 </body>
 </html>
