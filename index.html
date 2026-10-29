@@ -18,7 +18,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent; /* ปิดแถบสีฟ้าเวลาคลิกหรือกดบนมือถือ */
+            -webkit-tap-highlight-color: transparent;
         }
         body {
             background-color: var(--bg-color);
@@ -314,10 +314,10 @@
         <!-- การอัพเดทเว็บไซต์ -->
         <div id="page-updates" class="page">
             <h1>การอัพเดทเว็บไซต์</h1>
-            <p><strong>เวอร์ชันล่าสุด:</strong> v1.1.2</p>
-            <p>• เอาแถบสีฟ้าเวลากล่าวคลิก/ทัชบนมือถือออกเรียบร้อยแล้ว</p>
-            <p>• เปลี่ยนชื่อสคริปต์เป็น "การอยู่รอดของการพเนจร" อย่างเป็นทางการ</p>
-            <p>• ระบบบันทึกสถานะหน้าต่างและลิงก์ทำงานปกติ</p>
+            <p><strong>เวอร์ชันล่าสุด:</strong> v1.1.4</p>
+            <p>• รองรับ URL Hash ตรงเป๊ะ (#scripts-การอยู่รอดของการพเนจร)</p>
+            <p>• นำแถบสีฟ้าเวลาคลิก/ทัชออกเพื่อให้ใช้งานลื่นไหลบนมือถือ</p>
+            <p>• ระบบบันทึกหน้าและหน้าต่างสคริปต์อัตโนมัติเมื่อคัดลอกลิงก์</p>
         </div>
     </div>
 
@@ -359,7 +359,7 @@
         function openScriptModal(updateHash = true) {
             document.getElementById('scriptModal').classList.add('active');
             if (updateHash) {
-                window.location.hash = 'script-detail';
+                window.location.hash = 'scripts-การอยู่รอดของการพเนจร';
             }
         }
 
@@ -380,8 +380,8 @@
         }
 
         function handleHash() {
-            const hash = window.location.hash.replace('#', '');
-            if (hash === 'script-detail') {
+            const hash = decodeURIComponent(window.location.hash.replace('#', ''));
+            if (hash === 'scripts-การอยู่รอดของการพเนจร' || hash === 'script-detail') {
                 switchPage('scripts', false);
                 openScriptModal(false);
             } else if (hash && document.getElementById('page-' + hash)) {
